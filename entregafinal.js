@@ -1,5 +1,15 @@
 /* js formulario */
 
+const contenedorClientes = "json/data.json";
+
+fetch(contenedorClientes)
+    .then(respuesta => respuesta.json())
+    .then(datos => {
+        console.log(datos)
+    })
+    .catch(error => console.log(error))
+//
+
 class Usuario {
     constructor(nombre, apellido, email, contrasena) {
         this.nombre = nombre;
@@ -40,21 +50,8 @@ formulario.addEventListener("submit", (e) => {
 
 const iniciarSesion = document.getElementById("iniciarSesion");
 
-//const nombreAutorizado = nombre;
-//const contrasenaAutorizada = contrasena;
-//const even = (element) => element === nombre && element === contrasena;
-//console.log(contenedorClientes.some(even))
-
 iniciarSesion.addEventListener("click", () => {
     const contenedorClientes = "json/data.json";
-
-    fetch(contenedorClientes)
-        .then(respuesta => respuesta.json())
-        .then(datos => {
-            console.log(datos)
-        })
-        .catch(error => console.log(error))
-    //
 
     Swal.fire({
         title: "Login",
@@ -67,17 +64,35 @@ iniciarSesion.addEventListener("click", () => {
         if (result.isConfirmed) {
             const nombreLogin = document.getElementById("nombreLog").value;
             const contrasenaLogin = document.getElementById("contrasenaLog").value;
-            
-            //if
-            Swal.fire({
-                title: "Datos Incorrectos",
-                icon: "success",
-                confirmButtonText: "Aceptar",
-            })
 
-            if (even = (nombre, contrasena) => nombre === nombreLogin && contrasena === contrasenaLogin) {
-                window.location.href = "registrado.html";
+            fetch(contenedorClientes)
+                .then(respuesta => respuesta.json())
+                .then(datos => {
+                    compararDatos(datos, nombreLogin, contrasenaLogin)
+                    datosIncorrectos(datos, nombreLogin, contrasenaLogin)
+                })
+                .catch(error => console.log(error))
+            //
+
+            function datosIncorrectos(data, nombreLogin, contrasenaLogin) {
+                data.forEach((user) => {
+                    if (user.nombre != nombreLogin || user.contrasena != contrasenaLogin) {
+                        Swal.fire({
+                            title: "Datos Incorrectos",
+                            icon: "success",
+                            confirmButtonText: "Aceptar",
+                        })
+                    }
+                });
             }
         }
     })
 })
+
+function compararDatos(data, nombreLogin, contrasenaLogin) {
+    data.forEach((user) => {
+        if (user.nombre == nombreLogin || user.contrasena == contrasenaLogin) {
+            window.location.href = "registrado.html";
+        }
+    });
+}
